@@ -1,5 +1,74 @@
-import Notiflix from 'notiflix';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
-
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import 'modern-normalize/modern-normalize.css';
+import refs from './js/refs';
+import createGalleryCard from './templates/gallery_card.hbs';
+import { PixabayAPI } from './js/fetchimages';
+import { letScroll } from './js/smoth-scroll';
+
+const pixabayAPI = new PixabayAPI(40);
+const simpleLightbox = new SimpleLightbox('.gallery a');
+let page;
+
+refs.formEl.addEventListener('submit', onSubmit);
+
+async function onSubmit(evt) {
+  evt.preventDefault();
+
+  refs.loadMoreBtn.classList.add('is-hidden');
+
+  page = 1;
+  const searchQuery = evt.currentTarget.elements['searchQuery'].value.trim();
+
+  pixabayAPI.query = searchQuery;
+
+  if (!searchQuery) {
+    Notify.failure('Enter your request');
+    return;
+  }
+
+  try {
+    const response = await pixabayAPI.getPhotosByQuery(page);
+
+    if (response.data.hits.length === 0) {
+      refs.galleryEl.innerHTML = '';
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
+    refs.galleryEl.innerHTML = createGalleryCard(response.data.hits);
+    simpleLightbox.refresh();
+    Notify.info(`Hooray! We found ${response.data.totalHits} images.`);
+
+    if (!(response.data.totalHits <= 40)) {
+      refs.loadMoreBtn.classList.remove('is-hidden');
+      refs.loadMoreBtn.addEventListener('click', onLoadMore);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function onLoadMore() {
+  page += 1;
+  let totalPage;
+  try {
+    const response = await pixabayAPI.getPhotosByQuery(page);
+    totalPage = response.data.totalHits / pixabayAPI.per_page;
+    refs.galleryEl.insertAdjacentHTML(
+      'beforeend',
+      createGalleryCard(response.data.hits)
+    );
+    simpleLightbox.refresh();
+    letScroll();
+    if (totalPage < page) {
+      refs.loadMoreBtn.classList.add('is-hidden');
+      refs.loadMoreBtn.removeEventListener('click', onLoadMore);
+      Notify.info("We're sorry, but you've reached the end of search results.");
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
