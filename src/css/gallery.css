@@ -80,3 +80,14 @@ header {
 .load-more-btn.is-hidden {
   display: none;
 }
+
+.plug {
+  display: flex;
+  justify-content: center;
+  text-transform: uppercase;
+  font-size: 40px;
+}
+
+.plug.is-hidden {
+  display: none;
+}

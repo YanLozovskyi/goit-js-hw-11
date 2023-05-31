@@ -1,4 +1,5 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import 'animate.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import refs from './js/refs';
@@ -35,6 +36,8 @@ async function onSubmit(evt) {
 
     if (response.data.hits.length === 0) {
       refs.galleryEl.innerHTML = '';
+      refs.plug.classList.remove('is-hidden');
+      refs.plug.textContent = 'you should try to enter the correct query';
       Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.',
         { clickToClose: true }
@@ -42,6 +45,7 @@ async function onSubmit(evt) {
       return;
     }
     refs.galleryEl.innerHTML = createGalleryCard(response.data.hits);
+    refs.plug.classList.add('is-hidden');
     simpleLightbox.refresh();
     Notify.info(`Hooray! We found ${response.data.totalHits} images.`, {
       clickToClose: true,
