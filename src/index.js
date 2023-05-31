@@ -37,7 +37,8 @@ async function onSubmit(evt) {
     if (response.data.hits.length === 0) {
       refs.galleryEl.innerHTML = '';
       refs.plug.classList.remove('is-hidden');
-      refs.plug.textContent = 'you should try to enter the correct query';
+      refs.plug.textContent =
+        'And I am here again,you must try to enter the correct query';
       Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.',
         { clickToClose: true }
