@@ -5,6 +5,13 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: fixed;
+  top: 0;
+}
+
+.header-scroll {
+  background-color: hsla(199, 91%, 27%, 0.5);
+  border-bottom: 1px solid white;
 }
 
 .search-form {
@@ -33,7 +40,7 @@ header {
 }
 
 .section-gallery {
-  padding-top: 70px;
+  padding-top: 98px;
 }
 
 .gallery {
