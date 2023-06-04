@@ -6,6 +6,7 @@ import refs from './js/refs';
 import createGalleryCard from './templates/gallery_card.hbs';
 import { PixabayAPI } from './js/fetchimages';
 import { letScroll } from './js/smoth-scroll';
+import { throttle } from 'throttle-debounce';
 
 const pixabayAPI = new PixabayAPI(40);
 const simpleLightbox = new SimpleLightbox('.gallery a', {
@@ -89,15 +90,22 @@ async function onLoadMore() {
 
 // fixed header
 
-function onScrollHeader(px) {
-  const screenSize = window.screen.width;
-  if (screenSize >= px) {
-    scrollY <= 70
-      ? document.getElementById('header').classList.remove('header-scroll')
-      : document.getElementById('header').classList.add('header-scroll');
-  }
+function addIntersectionObserver() {
+  const options = {
+    rootMargin: '70px',
+    threshold: 1.0,
+  };
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) {
+        document.getElementById('header').classList.add('header-scroll');
+      } else {
+        document.getElementById('header').classList.remove('header-scroll');
+      }
+    });
+  }, options);
+
+  observer.observe(document.querySelector('.observer-wrapper'));
 }
 
-window.onscroll = function () {
-  onScrollHeader(768);
-};
+addIntersectionObserver();
